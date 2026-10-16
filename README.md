@@ -4,22 +4,38 @@ VERITY extracts factual claims from a report, checks them against uploaded sourc
 
 ## Run locally
 
-Use Python 3.10+ and Node.js 18+.
+Use Python 3.12+ and Node.js 18+.
 
-1. Start the API from `VERITY/backend`:
+### Quick start from the Projects folder
+
+From `C:\Users\thril\Projects`, run:
+
+```powershell
+.\VERITY\start.ps1
+```
+
+This script uses VERITY's own virtual environment and correct backend/frontend folders. It installs missing dependencies, starts either server only when it is not already running, and checks both local URLs. This avoids looking for `requirements.txt` in the Projects folder or starting a second API on the same port.
+
+### Manual start
+
+1. In the API terminal, move into `VERITY/backend` before installing requirements or launching Uvicorn:
 
    ```powershell
-   python -m venv .venv
+   Set-Location .\VERITY\backend
+   py -3.12 -m venv .venv
    .venv\Scripts\Activate.ps1
-   pip install -r requirements.txt
-   uvicorn main:app --reload
+   python -m pip install -r requirements.txt
+   python -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
    ```
 
-2. In another terminal, start the frontend from `VERITY/frontend`:
+   If the API is already running at `http://127.0.0.1:8000`, leave that instance running and do not start another one.
+
+2. In another terminal, start the frontend from the Projects folder:
 
    ```powershell
+   Set-Location .\VERITY\frontend
    npm install
-   npm run dev
+   npm run dev -- --host 127.0.0.1
    ```
 
 3. Open the local URL printed by Vite (normally `http://localhost:5173`).
