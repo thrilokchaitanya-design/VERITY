@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, ArrowRight, Check, CheckCircle2, ChevronDown, FileText, HelpCircle, LoaderCircle, Search, ShieldCheck, Upload, X } from 'lucide-react';
+import DitherVeil from './components/DitherVeil.jsx';
+import ElectricBorder from './components/ElectricBorder.jsx';
+import ElectricLogo from './components/ElectricLogo.jsx';
+import FuzzyText from './components/FuzzyText.jsx';
+import LetterGlitch from './components/LetterGlitch.jsx';
+import WordsPreloader from './components/WordsPreloader.jsx';
 import './styles.css';
 
 const API = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
@@ -15,6 +21,7 @@ function App() {
   const [results, setResults] = useState(null);
   const [error, setError] = useState('');
   const [filter, setFilter] = useState('ALL');
+  const [showPreloader, setShowPreloader] = useState(true);
 
   async function upload(file) {
     const body = new FormData(); body.append('file', file);
@@ -67,11 +74,87 @@ function App() {
   const counts = (results || []).reduce((all, claim) => ({ ...all, [claim.verdict]: all[claim.verdict] + 1 }), { SUPPORTED: 0, CONTRADICTED: 0, UNVERIFIABLE: 0 });
   const visible = (results || []).filter(claim => filter === 'ALL' || claim.verdict === filter);
 
-  return <div className="app-shell">
+  return <><div className="app-shell">
+    <div className="ambient-letter-glitch" aria-hidden="true">
+      <LetterGlitch
+        baseColor="#9b83df"
+        glitchColors={["#7558b8", "#ad6dff", "#e8dcff"]}
+        fontSize={14}
+        density={0.62}
+        baseOpacity={0.28}
+        glitchAmount={0.38}
+        speed={0.4}
+        flow={0.3}
+        edgeFade={0.12}
+        centerFade={0.18}
+        interactive
+        clickEffect="none"
+        intro={false}
+      />
+    </div>
     <header className="topbar"><a className="brand" href="#"><span className="brand-mark"><ShieldCheck size={18}/></span><span>VERITY</span><i>Evidence Intelligence</i></a><div className="top-meta"><span className="live-dot"/> DOCUMENT REVIEW <span className="meta-divider"/> PRIVATE SESSION</div></header>
     <main className="layout">
-      <section className="intro"><div className="eyebrow"><span/> CLAIM VERIFICATION WORKSPACE</div><h1>Every claim has<br/><em>a burden of proof.</em></h1><p>Compare a report against its source documents. Each finding links back to the evidence that supports it.</p><div className="steps"><span className="step-num">01</span> Upload documents <ArrowRight size={13}/><span className="step-num">02</span> Review evidence</div></section>
+      <section className="hero-composition" aria-label="VERITY claim verification workspace">
+        <div className="visual-logo-card">
+          <ElectricLogo
+            src="/verity-logo.svg"
+            color="#ecc7ff"
+            glowColor="#ad6dff"
+            scale={0.7}
+            intensity={0.9}
+            glow={1}
+            thickness={1.5}
+            strands={4}
+            bend={0.6}
+            crackle={1.2}
+            arcs={0.7}
+            flicker={0.4}
+            fill={0}
+            speed={2}
+            interactive
+            cursorIntensity={0.75}
+            cursorRadius={100}
+            theme="dark"
+          />
+          <span className="visual-wordmark">VERITY</span>
+        </div>
+        <section className="intro"><div className="eyebrow"><span/> CLAIM VERIFICATION WORKSPACE</div><h1 className="visually-hidden">Every claim has a burden of proof.</h1><div className="hero-tech-heading" aria-hidden="true"><div className="hero-tech-line"><FuzzyText className="hero-fuzzy-text" fontSize="clamp(34px, 3.7vw, 52px)" fontWeight={700} letterSpacing={-2} color="#e9e8ed" baseIntensity={0.035} hoverIntensity={0.62} fuzzRange={18} transitionDuration={10} clickEffect intro={false}>Every claim has</FuzzyText></div><div className="hero-tech-line"><FuzzyText className="hero-fuzzy-text" fontSize="clamp(34px, 3.7vw, 52px)" fontWeight={700} letterSpacing={-2} color="#a890ed" baseIntensity={0.035} hoverIntensity={0.62} fuzzRange={18} transitionDuration={10} clickEffect intro={false}>a burden of proof.</FuzzyText></div></div><p>Compare a report against its source documents. Each finding links back to the evidence that supports it.</p><div className="steps"><span className="step-num">01</span> Upload documents <ArrowRight size={13}/><span className="step-num">02</span> Review evidence</div></section>
+        <div className="visual-study-card">
+          <div className="visual-study-heading"><span>INTERACTIVE IMAGE STUDY</span><span>MOVE TO REVEAL</span></div>
+          <div className="visual-study-image">
+            <DitherVeil
+              src="https://images.unsplash.com/photo-1737071371043-761e02b1ef95?q=80&w=1400&auto=format&fit=crop"
+              pattern="floyd"
+              pixelSize={2}
+              inkColor="#120f17"
+              paperColor="#f4f1ea"
+              revealRadius={120}
+              softness={0.6}
+              linger={1}
+            />
+          </div>
+        </div>
+      </section>
       <section className="work-grid">
+        <ElectricBorder
+          color="#8061c7"
+          glowColor="#694aa5"
+          speed={0.55}
+          chaos={0.28}
+          spread={0.25}
+          thickness={0.9}
+          strands={2}
+          glow={0.2}
+          intensity={0.32}
+          arcs={0.1}
+          flicker={0.24}
+          borderRadius={12}
+          offset={0}
+          intro={false}
+          interactive
+          theme="dark"
+          className="electric-panel-border"
+        >
         <aside className="sidebar">
           <div className="section-heading"><span>DOCUMENTS</span><span className="muted">{references.length + (report ? 1 : 0)} ADDED</span></div>
           <UploadCard label="PRIMARY REPORT" hint="The document containing claims" value={report} onChange={files => addReport(files[0])} />
@@ -81,7 +164,27 @@ function App() {
           <div className="privacy-note"><ShieldCheck size={14}/><span>Files are kept in memory for this session and cleared when the API restarts.</span></div>
           {error && <div className="error-box" role="alert"><AlertCircle size={16}/><span>{error}</span></div>}
         </aside>
+        </ElectricBorder>
 
+        <ElectricBorder
+          color="#8061c7"
+          glowColor="#694aa5"
+          speed={0.55}
+          chaos={0.28}
+          spread={0.25}
+          thickness={0.9}
+          strands={2}
+          glow={0.2}
+          intensity={0.32}
+          arcs={0.1}
+          flicker={0.24}
+          borderRadius={12}
+          offset={0}
+          intro={false}
+          interactive
+          theme="dark"
+          className="electric-panel-border"
+        >
         <section className="results-panel">
           {!results && !busy && <div className="empty-state"><div className="empty-icon"><Search size={22}/></div><div className="eyebrow">EVIDENCE FIRST</div><h2>Findings will appear here</h2><p>Add a primary report and at least one evidence source to begin. VERITY separates missing evidence from direct contradiction.</p><div className="empty-chips"><span><CheckCircle2 size={13}/> Supported</span><span><AlertCircle size={13}/> Contradicted</span><span><HelpCircle size={13}/> Unverifiable</span></div></div>}
           {busy && <div className="progress-state"><div className="progress-top"><div><div className="eyebrow">ANALYSIS IN PROGRESS</div><h2>{status || 'Preparing documents'}</h2></div><span>{progress}%</span></div><div className="progress-track"><div style={{ width: `${progress}%` }}/></div><p>Claims are checked against your uploaded sources. Keep this tab open.</p><div className="skeletons"><i/><i/><i/></div></div>}
@@ -92,10 +195,11 @@ function App() {
             <p className="disclaimer">AI findings can be wrong. Confirm important claims against the cited source documents.</p>
           </div>}
         </section>
+        </ElectricBorder>
       </section>
     </main>
     <footer><span>VERITY <b>·</b> EVIDENCE INTELLIGENCE</span><span>TRACEABLE FINDINGS, SOURCE BY SOURCE</span></footer>
-  </div>;
+  </div>{showPreloader && <WordsPreloader onComplete={() => setShowPreloader(false)} />}</>;
 }
 
 function UploadCard({ label, hint, multiple = false, value, onChange }) {
